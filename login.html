@@ -3,33 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تسجيل الدخول | MediaAI</title>
+    <title>MediaAI | دخول</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <style>
         body { background: #050505; color: white; font-family: 'Cairo', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="h-screen flex items-center justify-center p-6">
-    <div class="glass w-full max-w-md p-8 rounded-3xl">
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-bold text-blue-500">مرحباً بعودتك</h1>
-            <p class="text-gray-400 mt-2">سجل دخولك للوصول للوحة التحكم</p>
-        </div>
-        
-        <form class="space-y-6">
-            <div>
-                <label class="block mb-2 text-sm">البريد الإلكتروني</label>
-                <input type="email" class="w-full p-3 rounded-xl bg-white/10 border border-gray-700 focus:border-blue-500 outline-none">
-            </div>
-            <div>
-                <label class="block mb-2 text-sm">كلمة المرور</label>
-                <input type="password" class="w-full p-3 rounded-xl bg-white/10 border border-gray-700 focus:border-blue-500 outline-none">
-            </div>
-            <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold transition">دخول</button>
+<body class="h-screen flex items-center justify-center p-4">
+    <div class="glass w-full max-w-md p-8 rounded-[2rem] shadow-2xl text-center">
+        <h1 class="text-3xl font-bold text-blue-500 mb-8">تسجيل الدخول</h1>
+        <form id="loginForm" class="space-y-5">
+            <input type="email" id="email" class="w-full p-4 rounded-2xl bg-white/5 border border-gray-800 focus:border-blue-500 outline-none text-white text-right" placeholder="البريد الإلكتروني" required>
+            <input type="password" id="password" class="w-full p-4 rounded-2xl bg-white/5 border border-gray-800 focus:border-blue-500 outline-none text-white text-right" placeholder="كلمة المرور" required>
+            <button type="submit" class="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-2xl font-bold transition shadow-lg shadow-blue-500/20 text-white">دخول</button>
         </form>
-        
-        <p class="mt-8 text-center text-gray-400">ليس لديك حساب؟ <a href="signup.html" class="text-blue-500">اشترك الآن</a></p>
+        <p class="mt-6 text-sm text-gray-500">ليس لديك حساب؟ <a href="signup.html" class="text-blue-500 underline text-white">سجل الآن</a></p>
     </div>
+
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyD0qsSRI5c8oNjWZMupSe59sQ5OsYr4MUE",
+            authDomain: "mymediaai.firebaseapp.com",
+            projectId: "mymediaai",
+            storageBucket: "mymediaai.firebasestorage.app",
+            appId: "1:1052949171163:web:ba0bd6e2ef11a6c32e35fe"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            firebase.auth().signInWithEmailAndPassword(document.getElementById('email').value, document.getElementById('password').value)
+                .then(() => { window.location.href = "dashboard.html"; })
+                .catch((err) => { alert("فشل الدخول: " + err.message); });
+        });
+    </script>
 </body>
 </html>
