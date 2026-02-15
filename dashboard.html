@@ -3,155 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaAI | لوحة التحكم الذكية</title>
+    <title>MediaAI | المنصة الذكية المتكاملة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
         body { font-family: 'Tajawal', sans-serif; background-color: #050505; color: #e4e4e7; }
-        .glass { background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(10px); border: 1px solid #27272a; }
-        .sidebar-item:hover { background: #18181b; border-right: 4px solid #3b82f6; }
-        /* تنسيق الردود */
-        #aiResponse h1, #aiResponse h2 { font-weight: bold; color: #3b82f6; margin-top: 10px; }
-        #aiResponse ul { list-style: disc; margin-right: 20px; }
-        #aiResponse code { background: #27272a; padding: 2px 5px; border-radius: 5px; font-family: monospace; }
+        .glass { background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(12px); border: 1px solid #27272a; }
+        .sidebar-item { border-right: 3px solid transparent; transition: 0.3s; }
+        .sidebar-item:hover { background: #18181b; border-right-color: #3b82f6; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
+        
+        /* تحسين شكل الردود */
+        .prose h1, .prose h2 { color: #3b82f6; font-weight: 900; margin-bottom: 1rem; }
+        .prose p { margin-bottom: 1rem; line-height: 1.8; }
+        .prose code { background: #27272a; color: #fbbf24; padding: 0.2rem 0.4rem; border-radius: 6px; font-size: 0.9em; }
+        pre { background: #111 !important; padding: 1rem; border-radius: 12px; border: 1px solid #333; overflow-x: auto; margin: 1rem 0; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
 
-    <aside class="w-80 glass h-full flex flex-col hidden md:flex border-l border-zinc-800">
+    <aside class="w-80 glass h-full flex flex-col hidden md:flex border-l border-zinc-800 z-20">
         <div class="p-6 border-b border-zinc-800">
             <h2 class="text-xl font-black text-white flex items-center gap-2">
-                <span class="text-blue-500">⏳</span> سجل محادثاتك
+                <span class="bg-blue-600/20 text-blue-500 p-2 rounded-lg text-sm">⏳</span> سجل الطلبات
             </h2>
         </div>
-        <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-            <p class="text-zinc-600 text-center mt-10 text-sm">لا يوجد طلبات سابقة</p>
-        </div>
-        <div class="p-4 bg-zinc-900/50">
-            <button onclick="firebase.auth().signOut()" class="w-full py-3 text-red-400 hover:bg-red-500/10 rounded-xl transition font-bold text-sm">تسجيل الخروج</button>
-        </div>
-    </aside>
-
-    <main class="flex-1 flex flex-col h-full relative">
-        <header class="p-4 flex justify-between items-center glass border-b border-zinc-800">
-            <div class="flex items-center gap-3">
-                <img id="userImg" src="https://ui-avatars.com/api/?name=User" class="w-10 h-10 rounded-full border border-blue-500">
-                <span id="userName" class="font-bold text-white text-sm">جاري التحميل...</span>
-            </div>
-            <h1 class="font-black text-blue-500">MediaAI</h1>
-        </header>
-
-        <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar" id="displayArea">
-            <div id="welcomeMessage" class="text-center mt-20">
-                <h1 class="text-4xl font-black text-white mb-4">كيف يمكنني مساعدتك؟</h1>
-                <p class="text-zinc-500">اكتب أي سؤال وسيقوم الذكاء الاصطناعي بالرد عليك وحفظ الإجابة.</p>
-            </div>
-            
-            <div id="responseContainer" class="max-w-3xl mx-auto glass p-8 rounded-[2rem] hidden">
-                <div id="aiResponse" class="prose prose-invert max-w-none text-right"></div>
-            </div>
-        </div>
-
-        <div class="p-6 bg-gradient-to-t from-black via-black to-transparent">
-            <div class="max-w-3xl mx-auto relative">
-                <textarea id="promptInput" rows="1" class="w-full p-4 pr-12 rounded-2xl bg-zinc-900 border border-zinc-800 focus:border-blue-500 outline-none resize-none" placeholder="اسأل عن أي شيء..."></textarea>
-                <button onclick="askAI()" id="sendBtn" class="absolute left-3 top-3 bg-blue-600 p-2 rounded-xl hover:bg-blue-700 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white transform rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyD0qsSRI5c8oNjWZMupSe59sQ5OsYr4MUE",
-            authDomain: "mymediaai.firebaseapp.com",
-            projectId: "mymediaai",
-            appId: "1:1052949171163:web:ba0bd6e2ef11a6c32e35fe"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        firebase.auth().onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('userName').innerText = user.displayName || "مستخدم";
-                if(user.photoURL) document.getElementById('userImg').src = user.photoURL;
-                loadHistory();
-            } else { window.location.href = "login.html"; }
-        });
-
-        async function askAI() {
-            const input = document.getElementById('promptInput');
-            const btn = document.getElementById('sendBtn');
-            const text = input.value.trim();
-            if(!text) return;
-
-            input.value = "";
-            document.getElementById('welcomeMessage').classList.add('hidden');
-            const container = document.getElementById('responseContainer');
-            const output = document.getElementById('aiResponse');
-            
-            container.classList.remove('hidden');
-            output.innerHTML = "⏳ جاري التفكير...";
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyCuJWJ3QOnwIW5yFFYrkYP-3zJomhB74Uw`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: text }] }] })
-                });
-                const data = await response.json();
-                const aiMsg = data.candidates[0].content.parts[0].text;
-                
-                // استخدام Marked لتنسيق النص
-                output.innerHTML = marked.parse(aiMsg);
-                
-                // حفظ في السجل
-                saveChat(text, aiMsg);
-            } catch (e) {
-                output.innerText = "حدث خطأ في الاتصال.";
-            }
-        }
-
-        async function saveChat(q, a) {
-            const user = firebase.auth().currentUser;
-            await db.collection("users").doc(user.uid).collection("history").add({
-                question: q,
-                answer: a,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            loadHistory();
-        }
-
-        async function loadHistory() {
-            const user = firebase.auth().currentUser;
-            const historyDiv = document.getElementById('chatHistory');
-            const snapshot = await db.collection("users").doc(user.uid).collection("history").orderBy("timestamp", "desc").limit(15).get();
-
-            if (snapshot.empty) return;
-            historyDiv.innerHTML = "";
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                const div = document.createElement('div');
-                div.className = "sidebar-item p-3 rounded-xl cursor-pointer transition text-right";
-                div.innerHTML = `
-                    <p class="text-xs text-blue-400 font-bold mb-1">طلب سابق</p>
-                    <p class="text-white text-sm truncate">${data.question}</p>
-                `;
-                div.onclick = () => {
-                    document.getElementById('welcomeMessage').classList.add('hidden');
-                    document.getElementById('responseContainer').classList.remove('hidden');
-                    document.getElementById('aiResponse').innerHTML = marked.parse(data.answer);
-                };
-                historyDiv.appendChild(div);
-            });
-        }
-    </script>
-</body>
-</html>
+        <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+            <p class="text-zinc-600 text-
