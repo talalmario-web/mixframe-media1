@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaAI | لوحة التحكم الذكية</title>
+    <title>MediaAI | النسخة الاحترافية الشاملة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -15,7 +15,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap');
         body { font-family: 'Tajawal', sans-serif; background: #050505; color: #e4e4e7; }
         .glass { background: rgba(15, 15, 15, 0.8); backdrop-filter: blur(12px); border: 1px solid #27272a; }
-        .sidebar-item:hover { background: #18181b; border-right: 4px solid #3b82f6; }
+        .sidebar-item { border-right: 3px solid transparent; transition: 0.3s; }
+        .sidebar-item:hover { background: #18181b; border-right-color: #3b82f6; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #27272a; border-radius: 10px; }
         pre { background: #111 !important; padding: 1rem; border-radius: 12px; border: 1px solid #333; direction: ltr; overflow-x: auto; }
         .prose h1, .prose h2 { color: #3b82f6; font-weight: 900; }
     </style>
@@ -23,56 +26,67 @@
 <body class="flex h-screen overflow-hidden">
 
     <aside class="w-80 glass h-full flex flex-col hidden md:flex border-l border-zinc-800">
-        <div class="p-6 border-b border-zinc-800 font-black text-white text-xl flex justify-between">
-            <span>⏳ السجل</span>
+        <div class="p-6 border-b border-zinc-800">
+            <h2 class="text-xl font-black text-white flex items-center gap-2">⏳ السجل الذكي</h2>
         </div>
-        <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-2"></div>
+        <div id="chatHistory" class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar"></div>
         <div class="p-4 border-t border-zinc-800">
             <button onclick="firebase.auth().signOut()" class="w-full py-3 text-red-500 font-bold hover:bg-red-500/10 rounded-xl transition">تسجيل الخروج</button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full">
+    <main class="flex-1 flex flex-col h-full relative">
         <header class="p-4 flex justify-between items-center glass border-b border-zinc-800">
             <div class="flex items-center gap-3">
                 <img id="userImg" src="https://ui-avatars.com/api/?name=User" class="w-10 h-10 rounded-full border border-blue-600 object-cover">
-                <span id="userName" class="font-bold text-white">تحميل...</span>
+                <div class="flex flex-col text-right">
+                    <span id="userName" class="font-bold text-white text-sm">جاري التحميل...</span>
+                    <span class="text-[9px] text-green-500">متصل الآن</span>
+                </div>
             </div>
-            <h1 class="font-black text-blue-500 text-xl tracking-tighter">MediaAI <span class="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full">Vision</span></h1>
+            <h1 class="font-black text-blue-500 text-xl tracking-tighter">MediaAI <span class="text-[10px] bg-blue-600 text-white px-2 py-0.5 rounded-full">PRO</span></h1>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-6" id="displayArea">
+        <div class="flex-1 overflow-y-auto p-6 custom-scrollbar" id="displayArea">
             <div id="welcomeMessage" class="text-center mt-20">
-                <h1 class="text-4xl font-black text-white mb-4 italic">مرحباً بك، كيف أساعدك؟</h1>
-                <p class="text-zinc-500">يمكنك كتابة سؤال أو رفع صورة لتحليلها بالذكاء الاصطناعي.</p>
+                <div class="text-6xl mb-6">🤖</div>
+                <h1 class="text-4xl font-black text-white mb-4 italic">مرحباً بك في MediaAI</h1>
+                <p class="text-zinc-500">ارفع صورة، اسأل سؤالاً، أو اطلب تحليل ملف.. أنا هنا لأجلك.</p>
             </div>
             
             <div id="responseWrapper" class="max-w-4xl mx-auto hidden space-y-4">
-                <div class="glass p-8 rounded-[2.5rem] relative">
+                <div class="glass p-8 rounded-[2.5rem] shadow-2xl relative">
                     <div id="aiResponse" class="prose prose-invert max-w-none text-right"></div>
                 </div>
-                <div class="flex gap-2">
+                <div id="actionButtons" class="flex flex-wrap gap-2">
                     <button onclick="downloadPDF()" class="bg-zinc-800 px-4 py-2 rounded-xl text-xs font-bold hover:bg-white hover:text-black transition">📥 PDF</button>
                     <button onclick="copyToClipboard()" class="bg-zinc-800 px-4 py-2 rounded-xl text-xs font-bold hover:bg-zinc-700 transition">📋 نسخ</button>
+                    <button onclick="speakText()" class="bg-zinc-800 px-4 py-2 rounded-xl text-xs font-bold hover:bg-yellow-500 hover:text-black transition">🔊 استماع</button>
                 </div>
             </div>
         </div>
 
         <div class="p-6 bg-black">
-            <div class="max-w-3xl mx-auto relative">
+            <div class="max-w-3xl mx-auto relative group">
                 <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="previewImage(this)">
-                <button onclick="document.getElementById('imageInput').click()" class="absolute right-3 top-2.5 p-3 text-zinc-500 hover:text-blue-500 transition">
+                <button onclick="document.getElementById('imageInput').click()" class="absolute right-4 top-3 text-zinc-500 hover:text-blue-500 transition">
                     🖼️
                 </button>
 
-                <textarea id="promptInput" rows="1" class="w-full p-4 pr-14 pl-16 rounded-2xl bg-zinc-900 border border-zinc-800 focus:border-blue-600 outline-none resize-none" placeholder="اسأل أو ارفع صورة..."></textarea>
+                <textarea id="promptInput" rows="1" 
+                    class="w-full p-4 pr-14 pl-28 rounded-2xl bg-zinc-900 border border-zinc-800 focus:border-blue-600 outline-none resize-none transition-all shadow-xl" 
+                    placeholder="اسأل أو ارفع صورة..."></textarea>
                 
-                <button onclick="askAI()" id="sendBtn" class="absolute left-3 top-2.5 bg-blue-600 p-3 rounded-xl hover:bg-blue-700 transition">
+                <button onclick="askAI()" id="sendBtn" class="absolute left-3 top-2 bg-blue-600 px-5 py-2.5 rounded-xl hover:bg-blue-700 transition flex items-center gap-2 active:scale-95 shadow-lg shadow-blue-600/20">
+                    <span class="text-xs font-black text-white">حللها</span>
                     🚀
                 </button>
             </div>
-            <div id="imgPreviewCont" class="max-w-3xl mx-auto mt-2 hidden">
-                <img id="imgPreview" class="h-16 w-16 object-cover rounded-lg border-2 border-blue-600">
+            <div id="imgPreviewCont" class="max-w-3xl mx-auto mt-3 hidden">
+                <div class="relative inline-block">
+                    <img id="imgPreview" class="h-16 w-16 object-cover rounded-xl border-2 border-blue-600 shadow-xl">
+                    <button onclick="removeImage()" class="absolute -top-2 -right-2 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px]">✕</button>
+                </div>
             </div>
         </div>
     </main>
@@ -109,6 +123,12 @@
             }
         }
 
+        function removeImage() {
+            selectedImage = null;
+            document.getElementById('imgPreviewCont').classList.add('hidden');
+            document.getElementById('imageInput').value = "";
+        }
+
         async function askAI() {
             const input = document.getElementById('promptInput');
             const text = input.value.trim();
@@ -118,10 +138,10 @@
             const wrapper = document.getElementById('responseWrapper');
             const output = document.getElementById('aiResponse');
             wrapper.classList.remove('hidden');
-            output.innerHTML = "⚡ جاري التحليل...";
+            output.innerHTML = "<span class='animate-pulse text-blue-500'>⚡ جاري التفكير بعمق...</span>";
 
             const payload = {
-                contents: [{ parts: [{ text: text || "اشرح هذه الصورة" }] }]
+                contents: [{ parts: [{ text: text || "اشرح محتوى هذه الصورة بالتفصيل" }] }]
             };
             if(selectedImage) {
                 payload.contents[0].parts.push({ inline_data: { mime_type: "image/jpeg", data: selectedImage } });
@@ -137,12 +157,11 @@
                 const aiMsg = data.candidates[0].content.parts[0].text;
                 output.innerHTML = marked.parse(aiMsg);
                 
-                saveChat(text || "تحليل صورة", aiMsg);
-                selectedImage = null;
-                document.getElementById('imgPreviewCont').classList.add('hidden');
+                saveChat(text || "تحليل صورة 🖼️", aiMsg);
+                removeImage();
                 input.value = "";
             } catch (e) {
-                output.innerText = "حدث خطأ في الاتصال.";
+                output.innerText = "فشل الاتصال بالمحرك، يرجى المحاولة لاحقاً.";
             }
         }
 
@@ -157,7 +176,7 @@
         async function loadHistory() {
             const user = firebase.auth().currentUser;
             const historyDiv = document.getElementById('chatHistory');
-            const snapshot = await db.collection("users").doc(user.uid).collection("history").orderBy("timestamp", "desc").limit(10).get();
+            const snapshot = await db.collection("users").doc(user.uid).collection("history").orderBy("timestamp", "desc").limit(15).get();
             historyDiv.innerHTML = "";
             snapshot.forEach(doc => {
                 const data = doc.data();
@@ -175,12 +194,20 @@
 
         function downloadPDF() {
             const element = document.getElementById('aiResponse');
-            html2pdf().from(element).save('MediaAI_Result.pdf');
+            const opt = { margin: 1, filename: 'MediaAI_Report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' } };
+            html2pdf().set(opt).from(element).save();
         }
 
         function copyToClipboard() {
             const text = document.getElementById('aiResponse').innerText;
-            navigator.clipboard.writeText(text).then(() => alert("تم النسخ ✅"));
+            navigator.clipboard.writeText(text).then(() => alert("تم نسخ النص! ✅"));
+        }
+
+        function speakText() {
+            const text = document.getElementById('aiResponse').innerText;
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'ar-SA';
+            window.speechSynthesis.speak(msg);
         }
     </script>
 </body>
