@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediaAI | الملف الشخصي</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body class="bg-black text-white min-h-screen">
+
+    <nav class="p-5 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50 backdrop-blur-md sticky top-0">
+        <a href="dashboard.html" class="text-blue-500 font-bold">← العودة للرئيسية</a>
+        <h2 class="text-lg font-bold">تعديل ملفك</h2>
+    </nav>
+
+    <main class="max-w-xl mx-auto p-6 mt-10">
+        <div class="bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-800 shadow-2xl text-center">
+            
+            <h2 class="text-xl font-bold mb-8">إعدادات الحساب</h2>
+
+            <div class="text-right mb-6">
+                <label class="block text-zinc-500 text-sm mb-2 mr-2">اسم العرض (سيظهر في الترحيب)</label>
+                <input id="newName" type="text" class="w-full p-4 rounded-2xl bg-black border border-zinc-800 focus:border-blue-500 outline-none transition" placeholder="مثال: طلال ماريو">
+            </div>
+
+            <button onclick="updateProfile()" id="saveBtn" class="w-full py-4 bg-blue-600 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/20">تحديث البيانات ✅</button>
+            
+            <p id="statusMsg" class="mt-4 text-sm font-medium"></p>
+        </div>
+    </main>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0qsSRI5c8oNjWZMupSe59sQ5OsYr4MUE",
+            authDomain: "mymediaai.firebaseapp.com",
+            projectId: "mymediaai",
+            appId: "1:1052949171163:web:ba0bd6e2ef11a6c32e35fe"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // تعبئة البيانات عند الدخول
+        firebase.auth().onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('newName').value = user.displayName || "";
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        async function updateProfile() {
+            const user = firebase.auth().currentUser;
+            const name = document.getElementById('newName').value;
+            const btn = document.getElementById('saveBtn');
+            const msg = document.getElementById('statusMsg');
+
+            if(!name) return alert("الرجاء كتابة اسم!");
+
+            btn.disabled = true;
+            btn.innerText = "جاري الحفظ...";
+
+            try {
+                // 1. تحديث الاسم في ملف التعريف
+                await user.updateProfile({ displayName: name });
+                
+                // 2. حفظ نسخة في قاعدة البيانات Firestore التي أنشأتها للتو
+                await db.collection("users").doc(user.uid).set({
+                    displayName: name,
+                    email: user.email,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+
+                msg.innerText = "تم الحفظ بنجاح! سيتم تحويلك...";
+                msg.className = "mt-4 text-green-500";
+                
+                setTimeout(() => window.location.href = "dashboard.html", 1500);
+
+            } catch (error) {
+                console.error(error);
+                msg.innerText = "خطأ: " + error.message;
+                msg.className = "mt-4 text-red-500";
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "تحديث البيانات ✅";
+            }
+        }
+    </script>
+</body>
+</html>
