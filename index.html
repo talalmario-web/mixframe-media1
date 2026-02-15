@@ -3,43 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة ذكاء الميديا | إدارة محتوى آلي</title>
+    <title>MediaAI | منصة صناعة المحتوى الذكية</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #0f172a; color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .gradient-text { background: linear-gradient(90deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        body { background-color: #050505; color: white; font-family: 'Cairo', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .hero-gradient { background: radial-gradient(circle at center, #1e40af 0%, #050505 100%); }
     </style>
 </head>
 <body>
-    <nav class="p-6 flex justify-between items-center border-b border-gray-800">
-        <div class="text-2xl font-bold gradient-text">MediaAI</div>
-        <div class="space-x-4 space-x-reverse">
+    <nav class="fixed w-full z-50 glass px-6 py-4 flex justify-between items-center">
+        <div class="text-2xl font-black text-blue-500">MEDIA<span class="text-white">AI</span></div>
+        <div class="hidden md:flex gap-8">
             <a href="#" class="hover:text-blue-400">الرئيسية</a>
-            <a href="#" class="hover:text-blue-400">المميزات</a>
-            <button class="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700">دخول اللوحة</button>
+            <a href="#features" class="hover:text-blue-400">المميزات</a>
+            <a href="#pricing" class="hover:text-blue-400">الأسعار</a>
+        </div>
+        <div class="flex gap-4">
+            <a href="login.html" class="px-5 py-2 rounded-lg border border-gray-600 hover:bg-white hover:text-black transition">دخول</a>
+            <a href="signup.html" class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 transition">ابدأ مجاناً</a>
         </div>
     </nav>
 
-    <header class="py-20 text-center">
-        <h1 class="text-5xl font-extrabold mb-6">أدر محتواك بـ <span class="gradient-text">ذكاء خارق</span></h1>
-        <p class="text-gray-400 text-xl max-w-2xl mx-auto">جدولة، صناعة، ونشر آلي على تيك توك، يوتيوب، وإكس في منصة واحدة وبدقة متناهية.</p>
-        <div class="mt-10">
-            <button class="bg-white text-black px-8 py-3 rounded-full font-bold text-lg hover:bg-gray-200 transition">ابدأ مجاناً الآن</button>
+    <section class="relative h-screen flex items-center justify-center text-center px-4 hero-gradient">
+        <div class="max-w-4xl">
+            <span class="bg-blue-900/30 text-blue-400 px-4 py-1 rounded-full text-sm mb-4 inline-block">مستقبل صناعة المحتوى وصل</span>
+            <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">اصنع، جدوِل، وانشر محتواك بـ <span class="text-blue-500">ضغطة واحدة</span></h1>
+            <p class="text-gray-400 text-lg md:text-xl mb-10">أول منصة عربية مدعومة بالذكاء الاصطناعي لإدارة حساباتك على تيك توك، يوتيوب، وإنستقرام بشكل آلي بالكامل.</p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button class="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-xl text-lg font-bold shadow-lg shadow-blue-500/20 transition">ابدأ تجربتك المجانية</button>
+                <button class="glass hover:bg-white/10 text-white px-10 py-4 rounded-xl text-lg font-bold transition">شاهد كيف يعمل</button>
+            </div>
         </div>
-    </header>
+    </section>
 
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-8 p-10">
-        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-            <h3 class="text-xl font-bold mb-3 text-blue-400">جدولة ذكية</h3>
-            <p class="text-gray-400">نظام جدولة دقيق بالساعة والثانية لجميع المنصات.</p>
-        </div>
-        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-            <h3 class="text-xl font-bold mb-3 text-purple-400">صناعة المحتوى</h3>
-            <p class="text-gray-400">توليد نصوص ووصف (Caption) باستخدام أحدث نماذج AI.</p>
-        </div>
-        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
-            <h3 class="text-xl font-bold mb-3 text-green-400">رفع آلي</h3>
-            <p class="text-gray-400">ارفع فيديوهاتك وصورك بضغطة زر واحدة لكل المنصات.</p>
+    <section id="features" class="py-20 px-6 bg-black">
+        <h2 class="text-3xl font-bold text-center mb-16">لماذا يختارنا المحترفون؟</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div class="glass p-8 rounded-2xl">
+                <i class="fas fa-magic text-4xl text-blue-500 mb-6"></i>
+                <h3 class="text-xl font-bold mb-4">كتابة محتوى إبداعي</h3>
+                <p class="text-gray-400">دعه يكتب لك السكريبت، الوصف، والهاشتاقات المناسبة لكل منصة.</p>
+            </div>
+            <div class="glass p-8 rounded-2xl">
+                <i class="fas fa-calendar-check text-4xl text-blue-500 mb-6"></i>
+                <h3 class="text-xl font-bold mb-4">جدولة زمنية دقيقة</h3>
+                <p class="text-gray-400">حدد الوقت والتاريخ، وسنقوم بالباقي. نشر آلي بدون تدخل بشري.</p>
+            </div>
+            <div class="glass p-8 rounded-2xl">
+                <i class="fas fa-chart-line text-4xl text-blue-500 mb-6"></i>
+                <h3 class="text-xl font-bold mb-4">تحليلات متقدمة</h3>
+                <p class="text-gray-400">راقب نمو حساباتك وتفاعل جمهورك من لوحة تحكم واحدة.</p>
+            </div>
         </div>
     </section>
 </body>
