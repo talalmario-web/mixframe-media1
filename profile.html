@@ -8,6 +8,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 </head>
 <body class="bg-black text-white min-h-screen">
 
@@ -19,14 +20,20 @@
     <main class="max-w-xl mx-auto p-6 mt-10">
         <div class="bg-zinc-900 p-8 rounded-[2.5rem] border border-zinc-800 shadow-2xl text-center">
             
-            <h2 class="text-xl font-bold mb-8">إعدادات الحساب</h2>
-
-            <div class="text-right mb-6">
-                <label class="block text-zinc-500 text-sm mb-2 mr-2">اسم العرض (سيظهر في الترحيب)</label>
-                <input id="newName" type="text" class="w-full p-4 rounded-2xl bg-black border border-zinc-800 focus:border-blue-500 outline-none transition" placeholder="مثال: طلال ماريو">
+            <div class="relative w-28 h-28 mx-auto mb-8">
+                <img id="profileImg" src="https://via.placeholder.com/150" class="w-full h-full rounded-full object-cover border-4 border-blue-600 shadow-xl">
+                <label for="fileInput" class="absolute bottom-0 right-0 bg-blue-600 p-2 rounded-full cursor-pointer hover:bg-blue-700 transition shadow-lg">
+                    📷
+                    <input type="file" id="fileInput" class="hidden" accept="image/*" onchange="uploadImage(this)">
+                </label>
             </div>
 
-            <button onclick="updateProfile()" id="saveBtn" class="w-full py-4 bg-blue-600 rounded-2xl font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-900/20">تحديث البيانات ✅</button>
+            <div class="text-right mb-6">
+                <label class="block text-zinc-500 text-sm mb-2 mr-2">اسم العرض</label>
+                <input id="newName" type="text" class="w-full p-4 rounded-2xl bg-black border border-zinc-800 focus:border-blue-500 outline-none transition" placeholder="مثال: طلال">
+            </div>
+
+            <button onclick="updateProfile()" id="saveBtn" class="w-full py-4 bg-blue-600 rounded-2xl font-bold hover:bg-blue-700 transition-all">حفظ التغييرات ✅</button>
             
             <p id="statusMsg" class="mt-4 text-sm font-medium"></p>
         </div>
@@ -37,54 +44,68 @@
             apiKey: "AIzaSyD0qsSRI5c8oNjWZMupSe59sQ5OsYr4MUE",
             authDomain: "mymediaai.firebaseapp.com",
             projectId: "mymediaai",
+            storageBucket: "mymediaai.appspot.com", // تأكد أن هذا السطر موجود
             appId: "1:1052949171163:web:ba0bd6e2ef11a6c32e35fe"
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const storage = firebase.storage();
 
-        // تعبئة البيانات عند الدخول
         firebase.auth().onAuthStateChanged(user => {
             if (user) {
                 document.getElementById('newName').value = user.displayName || "";
+                if (user.photoURL) document.getElementById('profileImg').src = user.photoURL;
             } else {
                 window.location.href = "login.html";
             }
         });
 
+        // وظيفة رفع الصورة
+        async function uploadImage(input) {
+            const file = input.files[0];
+            const user = firebase.auth().currentUser;
+            const msg = document.getElementById('statusMsg');
+            
+            if (!file) return;
+
+            msg.innerText = "⏳ جاري رفع الصورة...";
+            const storageRef = storage.ref(`avatars/${user.uid}`);
+
+            try {
+                const snapshot = await storageRef.put(file);
+                const url = await snapshot.ref.getDownloadURL();
+                
+                // تحديث الصورة في Firebase Auth
+                await user.updateProfile({ photoURL: url });
+                // تحديث الصورة في الواجهة
+                document.getElementById('profileImg').src = url;
+                
+                msg.innerText = "✅ تم تحديث الصورة!";
+                msg.className = "mt-4 text-green-500";
+            } catch (error) {
+                msg.innerText = "❌ فشل الرفع: " + error.message;
+            }
+        }
+
         async function updateProfile() {
             const user = firebase.auth().currentUser;
             const name = document.getElementById('newName').value;
             const btn = document.getElementById('saveBtn');
-            const msg = document.getElementById('statusMsg');
-
-            if(!name) return alert("الرجاء كتابة اسم!");
 
             btn.disabled = true;
-            btn.innerText = "جاري الحفظ...";
-
             try {
-                // 1. تحديث الاسم في ملف التعريف
                 await user.updateProfile({ displayName: name });
-                
-                // 2. حفظ نسخة في قاعدة البيانات Firestore التي أنشأتها للتو
                 await db.collection("users").doc(user.uid).set({
                     displayName: name,
-                    email: user.email,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 }, { merge: true });
 
-                msg.innerText = "تم الحفظ بنجاح! سيتم تحويلك...";
-                msg.className = "mt-4 text-green-500";
-                
-                setTimeout(() => window.location.href = "dashboard.html", 1500);
-
-            } catch (error) {
-                console.error(error);
-                msg.innerText = "خطأ: " + error.message;
-                msg.className = "mt-4 text-red-500";
+                alert("تم تحديث البيانات!");
+                window.location.href = "dashboard.html";
+            } catch (e) {
+                alert("خطأ: " + e.message);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "تحديث البيانات ✅";
             }
         }
     </script>
