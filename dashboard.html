@@ -3,63 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MediaAI | لوحة التحكم</title>
+    <title>لوحة التحكم | MediaAI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <style>
         body { background: #050505; color: white; font-family: 'Cairo', sans-serif; display: none; }
-        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .ai-card { transition: all 0.3s ease; border: 1px solid rgba(59, 130, 246, 0.1); }
-        .ai-card:hover { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59, 130, 246, 0.1); transform: translateY(-5px); }
-        .gradient-text { background: linear-gradient(90deg, #3b82f6, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
     </style>
 </head>
-<body class="min-h-screen pb-12">
-
-    <nav class="p-6 flex justify-between items-center border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
-        <h2 class="text-2xl font-bold gradient-text">MediaAI</h2>
-        <button onclick="logout()" class="px-5 py-2 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all text-sm font-bold">تسجيل الخروج</button>
+<body class="min-h-screen">
+    <nav class="p-6 glass flex justify-between items-center sticky top-0 z-50">
+        <h2 class="text-xl font-bold text-blue-500">MediaAI</h2>
+        <button onclick="logout()" class="px-4 py-2 bg-red-600/10 text-red-500 rounded-xl hover:bg-red-600 hover:text-white transition">خروج</button>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-6 pt-12">
-        <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold mb-4">مرحباً بك في <span class="gradient-text">منطقتك الآمنة</span> 🛡️</h1>
-            <p id="userMailDisplay" class="text-gray-500 font-mono text-sm"></p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div class="lg:col-span-2 glass p-8 rounded-[2.5rem] ai-card">
-                <h3 class="text-xl font-bold mb-6 flex items-center gap-2">🤖 منشئ المحتوى الذكي</h3>
-                <div class="space-y-4">
-                    <textarea id="aiInput" rows="4" class="w-full p-5 rounded-2xl bg-white/5 border border-white/10 focus:border-blue-500 outline-none text-white transition-all resize-none" placeholder="اكتب موضوعك هنا.. مثلاً: نصائح لتعلم البرمجة بأسلوب مشوق"></textarea>
-                    <button onclick="generateContent()" id="genBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2">
-                        <span>✨ توليد المحتوى</span>
-                    </button>
+    <main class="max-w-4xl mx-auto p-8">
+        <div class="glass p-10 rounded-[2.5rem] border-blue-500/20 border text-center">
+            <h1 class="text-4xl font-bold mb-4 text-white">مرحباً بك في منطقتك الآمنة 🛡️</h1>
+            <p id="userMail" class="text-blue-400 font-mono mb-8 italic"></p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-right">
+                <div class="p-6 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 transition">
+                    <h3 class="font-bold mb-2">🤖 منشئ المحتوى</h3>
+                    <p class="text-sm text-gray-400">جاهز لبدء توليد الأفكار؟ (قريباً)</p>
                 </div>
-                
-                <div id="resultBox" class="mt-8 p-6 rounded-2xl bg-black/40 border border-white/5 hidden">
-                    <p class="text-blue-400 text-xs mb-3 uppercase tracking-widest font-bold">النتيجة الذكية:</p>
-                    <div id="aiOutput" class="text-gray-300 leading-relaxed text-right whitespace-pre-wrap"></div>
-                </div>
-            </div>
-
-            <div class="glass p-8 rounded-[2.5rem] flex flex-col gap-6">
-                <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
-                    <h4 class="text-gray-400 text-sm mb-1">المشاريع المنفذة</h4>
-                    <span class="text-3xl font-bold">0</span>
-                </div>
-                <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
-                    <h4 class="text-gray-400 text-sm mb-1">الرصيد المتبقي</h4>
-                    <span class="text-3xl font-bold text-green-500">مجاني</span>
+                <div class="p-6 bg-white/5 rounded-2xl border border-white/5 hover:border-blue-500/50 transition">
+                    <h3 class="font-bold mb-2">📊 التحليلات</h3>
+                    <p class="text-sm text-gray-400">راقب نمو حساباتك هنا.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // إعدادات Firebase الخاصة بك
         var firebaseConfig = {
             apiKey: "AIzaSyD0qsSRI5c8oNjWZMupSe59sQ5OsYr4MUE",
             authDomain: "mymediaai.firebaseapp.com",
@@ -70,37 +47,15 @@
         };
         firebase.initializeApp(firebaseConfig);
 
-        // حماية الصفحة
+        // 🛡️ نظام الحماية
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 document.body.style.display = "block";
-                document.getElementById('userMailDisplay').innerText = user.email;
+                document.getElementById('userMail').innerText = user.email;
             } else {
                 window.location.href = "signup.html";
             }
         });
-
-        // وظيفة التوليد (المرحلة القادمة سنربطها بـ API Gemini)
-        function generateContent() {
-            const input = document.getElementById('aiInput').value;
-            const btn = document.getElementById('genBtn');
-            const resultBox = document.getElementById('resultBox');
-            const output = document.getElementById('aiOutput');
-
-            if(!input) return alert("من فضلك اكتب فكرة أولاً!");
-
-            btn.disabled = true;
-            btn.innerHTML = "<span>⏳ جاري التفكير...</span>";
-            resultBox.classList.remove('hidden');
-            output.innerText = "جاري صياغة المحتوى بأفضل جودة...";
-
-            // محاكاة للآن
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.innerHTML = "<span>✨ توليد المحتوى</span>";
-                output.innerText = "رائع! لقد تم تفعيل الواجهة بنجاح. الخطوة القادمة هي ربط API Key الخاص بالذكاء الاصطناعي ليقوم بكتابة محتوى حقيقي لطلبك: (" + input + ")";
-            }, 1500);
-        }
 
         function logout() {
             firebase.auth().signOut().then(() => { window.location.href = "signup.html"; });
