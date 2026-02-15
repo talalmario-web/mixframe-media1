@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم | MediaAI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background: #0a0a0a; color: white; font-family: 'Cairo', sans-serif; overflow-x: hidden; }
+        .sidebar { background: #111; border-left: 1px solid #222; }
+        .card { background: #1a1a1a; border: 1px solid #333; transition: 0.3s; }
+        .card:hover { border-color: #3b82f6; }
+        .ai-gradient { background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%); }
+    </style>
+</head>
+<body class="flex h-screen">
+
+    <aside class="sidebar w-64 hidden md:flex flex-col p-6">
+        <div class="text-2xl font-black text-blue-500 mb-10">MEDIA<span class="text-white">AI</span></div>
+        <nav class="space-y-4 flex-1">
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl bg-blue-600/10 text-blue-500"><i class="fas fa-home"></i> الرئيسية</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition"><i class="fas fa-magic"></i> كاتب المحتوى AI</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition"><i class="fas fa-calendar-alt"></i> جدولة المنشورات</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition"><i class="fas fa-link"></i> ربط الحسابات</a>
+            <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-gray-400 hover:bg-white/5 transition"><i class="fas fa-chart-pie"></i> الإحصائيات</a>
+        </nav>
+        <div class="border-t border-gray-800 pt-4">
+            <a href="index.html" class="flex items-center gap-3 p-3 text-red-400 hover:bg-red-400/10 rounded-xl transition"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto p-4 md:p-8">
+        <header class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="text-2xl font-bold">أهلاً بك، صانع المحتوى 👋</h2>
+                <p class="text-gray-400">لنصنع شيئاً رائعاً اليوم باستخدام الذكاء الاصطناعي</p>
+            </div>
+            <div class="flex gap-4">
+                <button class="p-2 bg-gray-800 rounded-full"><i class="fas fa-bell"></i></button>
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-bold">T</div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            <div class="card p-6 rounded-2xl">
+                <p class="text-gray-400 text-sm">منشورات مجدولة</p>
+                <h3 class="text-3xl font-bold mt-2">12</h3>
+            </div>
+            <div class="card p-6 rounded-2xl border-blue-500/50">
+                <p class="text-gray-400 text-sm">رصيد كلمات AI</p>
+                <h3 class="text-3xl font-bold mt-2 text-blue-500">5,000</h3>
+            </div>
+            <div class="card p-6 rounded-2xl">
+                <p class="text-gray-400 text-sm">إجمالي المشاهدات</p>
+                <h3 class="text-3xl font-bold mt-2 text-green-500">+124K</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="card p-6 rounded-3xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4 opacity-10 text-6xl"><i class="fas fa-robot"></i></div>
+                <h3 class="text-xl font-bold mb-6">مساعد الذكاء الاصطناعي</h3>
+                <textarea class="w-full h-40 bg-black/50 border border-gray-700 rounded-xl p-4 outline-none focus:border-blue-500 mb-4" placeholder="عن ماذا تريد أن تكتب اليوم؟..."></textarea>
+                <div class="flex gap-2">
+                    <button class="ai-gradient px-6 py-2 rounded-lg font-bold">توليد النص</button>
+                    <button class="bg-gray-800 px-6 py-2 rounded-lg font-bold">تحسين الأسلوب</button>
+                </div>
+            </div>
+
+            <div class="card p-6 rounded-3xl">
+                <h3 class="text-xl font-bold mb-6">رفع وجدولة فيديو</h3>
+                <div class="border-2 border-dashed border-gray-700 rounded-2xl p-8 text-center hover:border-blue-500 transition cursor-pointer mb-6">
+                    <i class="fas fa-cloud-upload-alt text-4xl mb-4 text-gray-500"></i>
+                    <p class="text-gray-400">اسحب الفيديو هنا أو اضغط للرفع</p>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <input type="datetime-local" class="bg-gray-800 p-3 rounded-xl outline-none border border-gray-700">
+                    <button class="bg-white text-black py-3 rounded-xl font-bold hover:bg-blue-500 hover:text-white transition">جدولة النشر الآن</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
